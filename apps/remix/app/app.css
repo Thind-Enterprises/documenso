@@ -1,6 +1,8 @@
 @import "@documenso/ui/styles/theme.css";
 
-/* Inter Variable Fonts */
+/* Instrument Sans — Corteron brand font (loaded via Google Fonts in root.tsx) */
+
+/* Inter Variable Fonts (fallback / legacy) */
 @font-face {
   font-family: "Inter";
   src: url("/fonts/inter-variablefont_opsz,wght.ttf") format("truetype-variations");
@@ -64,7 +66,7 @@
 
 @layer base {
   :root {
-    --font-sans: "Inter";
+    --font-sans: "Instrument Sans", "Inter", system-ui, sans-serif;
     --font-signature: "Caveat";
     --font-noto: "Noto Sans", "Noto Sans Korean", "Noto Sans Japanese", "Noto Sans Chinese";
   }

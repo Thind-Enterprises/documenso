@@ -10,13 +10,13 @@ describe('NEXT_PRIVATE_SIGNING_REASON', () => {
   it('defaults to the Documenso signing reason', () => {
     vi.stubEnv('NEXT_PRIVATE_SIGNING_REASON', undefined);
 
-    expect(NEXT_PRIVATE_SIGNING_REASON()).toBe('Signed by Documenso');
+    expect(NEXT_PRIVATE_SIGNING_REASON()).toBe('Signed by Corteron');
   });
 
   it('uses the default for an empty signing reason', () => {
     vi.stubEnv('NEXT_PRIVATE_SIGNING_REASON', '');
 
-    expect(NEXT_PRIVATE_SIGNING_REASON()).toBe('Signed by Documenso');
+    expect(NEXT_PRIVATE_SIGNING_REASON()).toBe('Signed by Corteron');
   });
 
   it('uses the configured signing reason verbatim', () => {

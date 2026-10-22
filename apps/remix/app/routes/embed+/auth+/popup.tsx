@@ -363,7 +363,7 @@ const EmbedAuthPopupLayout = ({ children, isCsc = false }: { children: ReactNode
           {isCsc ? (
             <Trans>Sign in with your signing provider to continue</Trans>
           ) : (
-            <Trans>Sign in to Documenso to continue</Trans>
+            <Trans>Sign in to Corteron to continue</Trans>
           )}
         </h1>
       </div>

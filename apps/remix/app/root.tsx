@@ -34,7 +34,15 @@ import { nonce, nonceContext } from './utils/nonce';
 
 export const middleware = [nonceMiddleware];
 
-export const links: Route.LinksFunction = () => [{ rel: 'stylesheet', href: stylesheet }];
+export const links: Route.LinksFunction = () => [
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap',
+  },
+  { rel: 'stylesheet', href: stylesheet },
+];
 
 export function meta() {
   return appMetaTags();
