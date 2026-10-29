@@ -86,7 +86,7 @@ export const ResetPasswordForm = ({ className, token }: ResetPasswordFormProps) 
   return (
     <Form {...form}>
       <form className={cn('flex w-full flex-col gap-y-4', className)} onSubmit={form.handleSubmit(onFormSubmit)}>
-        <fieldset className="flex w-full flex-col gap-y-4" disabled={isSubmitting}>
+        <fieldset className="flex w-full flex-col gap-y-5" disabled={isSubmitting}>
           <FormField
             control={form.control}
             name="password"
@@ -96,9 +96,9 @@ export const ResetPasswordForm = ({ className, token }: ResetPasswordFormProps) 
                   <Trans>Password</Trans>
                 </FormLabel>
                 <FormControl>
-                  <PasswordInput {...field} />
+                  <PasswordInput className="h-12 px-3.5 pr-[52px] text-base md:text-base" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[13px] leading-[18px]" />
               </FormItem>
             )}
           />
@@ -112,15 +112,20 @@ export const ResetPasswordForm = ({ className, token }: ResetPasswordFormProps) 
                   <Trans>Repeat Password</Trans>
                 </FormLabel>
                 <FormControl>
-                  <PasswordInput {...field} />
+                  <PasswordInput className="h-12 px-3.5 pr-[52px] text-base md:text-base" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[13px] leading-[18px]" />
               </FormItem>
             )}
           />
         </fieldset>
 
-        <Button type="submit" size="lg" loading={isSubmitting}>
+        <Button
+          type="submit"
+          size="lg"
+          loading={isSubmitting}
+          className="mt-1 h-12 w-full font-semibold text-[15px] shadow-button-primary hover:bg-documenso-700"
+        >
           {isSubmitting ? <Trans>Resetting Password...</Trans> : <Trans>Reset Password</Trans>}
         </Button>
       </form>

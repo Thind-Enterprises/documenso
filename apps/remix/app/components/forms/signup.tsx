@@ -1,4 +1,3 @@
-import communityCardsImage from '@documenso/assets/images/community-cards.png';
 import { authClient } from '@documenso/auth/client';
 import { useAnalytics } from '@documenso/lib/client-only/hooks/use-analytics';
 import {
@@ -32,8 +31,6 @@ import { FaIdCardClip } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
-
-import { UserProfileTimur } from '~/components/general/user-profile-timur';
 
 export const ZSignUpFormSchema = z
   .object({
@@ -221,50 +218,21 @@ export const SignUpForm = ({
   }, [form]);
 
   return (
-    <div className={cn('flex justify-center gap-x-12', className)}>
-      <div className="relative hidden flex-1 overflow-hidden rounded-xl border border-border xl:flex">
-        <div className="absolute -inset-8 -z-[2] backdrop-blur">
-          <img
-            src={communityCardsImage}
-            alt="community-cards"
-            className="h-full w-full object-cover dark:brightness-95 dark:contrast-[70%] dark:invert"
-          />
-        </div>
-
-        <div className="absolute -inset-8 -z-[1] bg-background/50 backdrop-blur-[2px]" />
-
-        <div className="relative flex h-full w-full flex-col items-center justify-evenly">
-          <div className="rounded-2xl border bg-background px-4 py-1 font-medium text-sm">
-            <Trans>User profiles are here!</Trans>
-          </div>
-
-          <div className="w-full max-w-md">
-            <UserProfileTimur rows={2} className="rounded-2xl border border-border bg-background shadow-md" />
-          </div>
-
-          <div />
-        </div>
-      </div>
-
-      <div className="relative z-10 flex min-h-[min(850px,80vh)] w-full max-w-lg flex-col rounded-xl border border-border bg-neutral-100 p-6 dark:bg-background">
-        <div className="h-20">
-          <h1 className="font-semibold text-xl md:text-2xl">
-            <Trans>Create a new account</Trans>
+    <div className={cn('flex justify-center', className)}>
+      <div className="relative flex w-full flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-[32px] leading-10 tracking-[-0.02em]">
+            <Trans>Create your account</Trans>
           </h1>
 
-          <p className="mt-2 text-muted-foreground text-xs md:text-sm">
-            <Trans>
-              Create your account and start using state-of-the-art document signing. Open and beautiful signing is
-              within your grasp.
-            </Trans>
+          <p className="text-[15px] text-muted-foreground leading-6">
+            <Trans>Send your first document for signature in minutes.</Trans>
           </p>
         </div>
 
-        <hr className="-mx-6 my-4" />
-
         <Form {...form}>
-          <form className="flex w-full flex-1 flex-col gap-y-4" onSubmit={form.handleSubmit(onFormSubmit)}>
-            <fieldset className="flex w-full flex-col gap-y-4" disabled={isSubmitting}>
+          <form className="flex w-full flex-1 flex-col gap-y-5" onSubmit={form.handleSubmit(onFormSubmit)}>
+            <fieldset className="flex w-full flex-col gap-y-5" disabled={isSubmitting}>
               {isEmailPasswordSignupEnabled && (
                 <>
                   <FormField
@@ -276,9 +244,9 @@ export const SignUpForm = ({
                           <Trans>Full Name</Trans>
                         </FormLabel>
                         <FormControl>
-                          <Input type="text" {...field} />
+                          <Input type="text" className="h-12 px-3.5 text-base md:text-base" {...field} />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-[13px] leading-[18px]" />
                       </FormItem>
                     )}
                   />
@@ -289,12 +257,12 @@ export const SignUpForm = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          <Trans>Email Address</Trans>
+                          <Trans>Email</Trans>
                         </FormLabel>
                         <FormControl>
-                          <Input type="email" {...field} />
+                          <Input type="email" className="h-12 px-3.5 text-base md:text-base" {...field} />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-[13px] leading-[18px]" />
                       </FormItem>
                     )}
                   />
@@ -309,10 +277,10 @@ export const SignUpForm = ({
                         </FormLabel>
 
                         <FormControl>
-                          <PasswordInput {...field} />
+                          <PasswordInput className="h-12 px-3.5 pr-[52px] text-base md:text-base" {...field} />
                         </FormControl>
 
-                        <FormMessage />
+                        <FormMessage className="text-[13px] leading-[18px]" />
                       </FormItem>
                     )}
                   />
@@ -323,17 +291,40 @@ export const SignUpForm = ({
                     render={({ field: { onChange, value } }) => (
                       <FormItem>
                         <FormLabel>
-                          <Trans>Sign Here</Trans>
+                          <Trans>Signature</Trans>
                         </FormLabel>
-                        <FormControl>
-                          <SignaturePadDialog
-                            disabled={isSubmitting}
-                            value={value}
-                            onChange={(v) => onChange(v ?? '')}
-                          />
-                        </FormControl>
+                        <div className="rounded-sm bg-card px-3 pt-3.5 pb-3 shadow-paper-sm">
+                          <div className="relative [&>div]:rounded-sm [&>div]:border-[1.5px] [&>div]:border-primary [&>div]:bg-primary/5">
+                            <FormControl>
+                              <SignaturePadDialog
+                                disabled={isSubmitting}
+                                value={value}
+                                onChange={(v) => onChange(v ?? '')}
+                              />
+                            </FormControl>
 
-                        <FormMessage />
+                            <span
+                              aria-hidden
+                              className="pointer-events-none absolute -top-2.5 left-3 rounded-sm bg-primary px-2 font-semibold text-[11px] text-white leading-[18px]"
+                            >
+                              <Trans>Sign here</Trans>
+                            </span>
+
+                            <span
+                              aria-hidden
+                              className="pointer-events-none absolute inset-x-5 bottom-[34px] border-slate-300 border-t"
+                            />
+
+                            <span
+                              aria-hidden
+                              className="pointer-events-none absolute bottom-[38px] left-5 text-base text-slate-400 leading-4"
+                            >
+                              ×
+                            </span>
+                          </div>
+                        </div>
+
+                        <FormMessage className="text-[13px] leading-[18px]" />
                       </FormItem>
                     )}
                   />
@@ -352,7 +343,7 @@ export const SignUpForm = ({
               )}
 
               {hasSocialAuthEnabled && (
-                <div className="relative flex items-center justify-center gap-x-4 py-2 text-xs uppercase">
+                <div className="relative flex items-center justify-center gap-x-3 text-[13px] leading-4">
                   <div className="h-px flex-1 bg-border" />
                   <span className="bg-transparent text-muted-foreground">
                     <Trans>Or</Trans>
@@ -366,7 +357,7 @@ export const SignUpForm = ({
                   type="button"
                   size="lg"
                   variant={'outline'}
-                  className="border bg-background text-muted-foreground"
+                  className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
                   disabled={isSubmitting}
                   onClick={onSignUpWithGoogleClick}
                 >
@@ -380,7 +371,7 @@ export const SignUpForm = ({
                   type="button"
                   size="lg"
                   variant={'outline'}
-                  className="border bg-background text-muted-foreground"
+                  className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
                   disabled={isSubmitting}
                   onClick={onSignUpWithMicrosoftClick}
                 >
@@ -394,7 +385,7 @@ export const SignUpForm = ({
                   type="button"
                   size="lg"
                   variant={'outline'}
-                  className="border bg-background text-muted-foreground"
+                  className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
                   disabled={isSubmitting}
                   onClick={onSignUpWithOIDCClick}
                 >
@@ -403,25 +394,33 @@ export const SignUpForm = ({
                 </Button>
               )}
 
-              <p className="mt-4 text-muted-foreground text-sm">
+              <p className="text-center text-[15px] text-muted-foreground leading-6 xl:hidden">
                 <Trans>
                   Already have an account?{' '}
-                  <Link to="/signin" className="text-documenso-700 duration-200 hover:opacity-70">
-                    Sign in instead
+                  <Link
+                    to="/signin"
+                    className="rounded-[2px] font-medium text-link underline underline-offset-[3px] ring-offset-background hover:text-link-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    Sign in
                   </Link>
                 </Trans>
               </p>
             </fieldset>
 
             {isEmailPasswordSignupEnabled && (
-              <Button loading={form.formState.isSubmitting} type="submit" size="lg" className="mt-6 w-full">
+              <Button
+                loading={form.formState.isSubmitting}
+                type="submit"
+                size="lg"
+                className="mt-6 h-12 w-full font-semibold text-[15px] shadow-button-primary hover:bg-documenso-700"
+              >
                 <Trans>Create account</Trans>
               </Button>
             )}
           </form>
         </Form>
         {availableLegalLinks.length > 0 && (
-          <p className="mt-6 text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-xs">
             <Trans>
               By proceeding, you agree to our{' '}
               {availableLegalLinks.map((link, index) => (
@@ -436,7 +435,7 @@ export const SignUpForm = ({
                     to={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-documenso-700 duration-200 hover:opacity-70"
+                    className="text-link underline underline-offset-[3px] hover:text-link-hover"
                   >
                     {link.label}
                   </Link>

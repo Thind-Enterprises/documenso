@@ -20,9 +20,12 @@ import { Link, redirect, useSearchParams } from 'react-router';
 
 import { SignInForm } from '~/components/forms/signin';
 import { SIGNUP_ERROR_MESSAGES } from '~/components/forms/signup';
+import { AuthShell } from '~/components/general/auth/auth-shell';
 import { appMetaTags } from '~/utils/meta';
 
 import type { Route } from './+types/signin';
+
+export const handle = { hasAuthShell: true };
 
 export function meta() {
   return appMetaTags(msg`Sign In`);
@@ -104,34 +107,48 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
 
   if (shouldAutoRedirectToOIDC) {
     return (
-      <div className="w-screen max-w-lg px-4">
+      <AuthShell>
         <div className="flex flex-col items-center justify-center gap-y-4 py-12">
           <Loader2Icon className="h-8 w-8 animate-spin text-muted-foreground" />
           <p className="text-muted-foreground text-sm">
             <Trans>Redirecting to {oidcProviderLabel || 'OIDC'}...</Trans>
           </p>
         </div>
-      </div>
+      </AuthShell>
     );
   }
 
   return (
-    <div className="w-screen max-w-lg px-4">
-      <div className="z-10 rounded-xl border border-border bg-neutral-100 p-6 dark:bg-background">
+    <AuthShell
+      action={
+        isSignupEnabled
+          ? {
+              prompt: <Trans>New to Corteron Sign?</Trans>,
+              label: <Trans>Create account</Trans>,
+              to: returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : '/signup',
+            }
+          : undefined
+      }
+    >
+      <div className="flex flex-col gap-8">
         {signupError && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert
+            variant="destructive"
+            className="rounded-lg border border-destructive-border bg-destructive-subtle px-4 py-3 text-foreground"
+          >
             <AlertDescription>{_(signupError)}</AlertDescription>
           </Alert>
         )}
 
-        <h1 className="font-semibold text-2xl">
-          <Trans>Sign in to your account</Trans>
-        </h1>
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-[32px] leading-10 tracking-[-0.02em]">
+            <Trans>Sign in</Trans>
+          </h1>
 
-        <p className="mt-2 text-muted-foreground text-sm">
-          <Trans>Welcome back, we are lucky to have you.</Trans>
-        </p>
-        <hr className="-mx-6 my-4" />
+          <p className="text-[15px] text-muted-foreground leading-6">
+            <Trans>Welcome back to Corteron Sign.</Trans>
+          </p>
+        </div>
 
         <SignInForm
           isEmailPasswordSigninEnabled={isEmailPasswordSigninEnabled}
@@ -143,19 +160,19 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
         />
 
         {isSignupEnabled && (
-          <p className="mt-6 text-center text-muted-foreground text-sm">
+          <p className="text-center text-[15px] text-muted-foreground leading-6 xl:hidden">
             <Trans>
-              Don't have an account?{' '}
+              New to Corteron Sign?{' '}
               <Link
                 to={returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : '/signup'}
-                className="text-documenso-700 duration-200 hover:opacity-70"
+                className="rounded-[2px] font-medium text-link underline underline-offset-[3px] ring-offset-background hover:text-link-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Sign up
+                Create an account
               </Link>
             </Trans>
           </p>
         )}
       </div>
-    </div>
+    </AuthShell>
   );
 }

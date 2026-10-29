@@ -8,7 +8,14 @@ import { trpc } from '@documenso/trpc/react';
 import { ZCurrentPasswordSchema } from '@documenso/trpc/server/auth-router/schema';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@documenso/ui/primitives/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@documenso/ui/primitives/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@documenso/ui/primitives/form/form';
 import { Input } from '@documenso/ui/primitives/input';
 import { PasswordInput } from '@documenso/ui/primitives/password-input';
@@ -22,7 +29,7 @@ import { Trans } from '@lingui/react/macro';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { browserSupportsWebAuthn, startAuthentication } from '@simplewebauthn/browser';
-import { KeyRoundIcon } from 'lucide-react';
+import { KeyRoundIcon, ShieldCheckIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaIdCardClip } from 'react-icons/fa6';
@@ -30,6 +37,8 @@ import { FcGoogle } from 'react-icons/fc';
 import { Link, useNavigate } from 'react-router';
 import { match } from 'ts-pattern';
 import { z } from 'zod';
+
+import { CrestChip } from '~/components/general/auth/crest-chip';
 
 const CommonErrorMessages: Record<string, MessageDescriptor> = {
   [AuthenticationErrorCode.AccountDisabled]: msg`This account has been disabled. Please contact support.`,
@@ -336,7 +345,7 @@ export const SignInForm = ({
   return (
     <Form {...form}>
       <form className={cn('flex w-full flex-col gap-y-4', className)} onSubmit={form.handleSubmit(onFormSubmit)}>
-        <fieldset className="flex w-full flex-col gap-y-4" disabled={isSubmitting || isPasskeyLoading}>
+        <fieldset className="flex w-full flex-col gap-y-5" disabled={isSubmitting || isPasskeyLoading}>
           {isEmailPasswordSigninEnabled && (
             <>
               <FormField
@@ -349,10 +358,10 @@ export const SignInForm = ({
                     </FormLabel>
 
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input type="email" className="h-12 px-3.5 text-base md:text-base" {...field} />
                     </FormControl>
 
-                    <FormMessage />
+                    <FormMessage className="text-[13px] leading-[18px]" />
                   </FormItem>
                 )}
               />
@@ -361,22 +370,22 @@ export const SignInForm = ({
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
+                  <FormItem className="grid grid-cols-[1fr_auto] items-baseline gap-y-2 space-y-0 [&>div]:col-span-2">
+                    <FormLabel className="col-start-1 row-start-1">
                       <Trans>Password</Trans>
                     </FormLabel>
 
                     <FormControl>
-                      <PasswordInput {...field} />
+                      <PasswordInput className="h-12 px-3.5 pr-[52px] text-base md:text-base" {...field} />
                     </FormControl>
 
-                    <FormMessage />
+                    <FormMessage className="text-[13px] leading-[18px]" />
 
                     {!hideForgotPassword && (
-                      <p className="mt-2 text-right">
+                      <p className="col-start-2 row-start-1 text-right">
                         <Link
                           to="/forgot-password"
-                          className="text-muted-foreground text-sm duration-200 hover:opacity-70"
+                          className="rounded-[2px] font-medium text-link text-sm ring-offset-background hover:text-link-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
                           <Trans>Forgot your password?</Trans>
                         </Link>
@@ -401,7 +410,7 @@ export const SignInForm = ({
                 type="submit"
                 size="lg"
                 loading={isSubmitting}
-                className="dark:bg-documenso dark:hover:opacity-90"
+                className="mt-1 h-12 w-full font-semibold text-[15px] shadow-button-primary hover:bg-documenso-700"
               >
                 {isSubmitting ? <Trans>Signing in...</Trans> : <Trans>Sign In</Trans>}
               </Button>
@@ -409,7 +418,7 @@ export const SignInForm = ({
           )}
 
           {isEmailPasswordSigninEnabled && hasSocialAuthEnabled && (
-            <div className="relative flex items-center justify-center gap-x-4 py-2 text-xs uppercase">
+            <div className="relative flex items-center justify-center gap-x-3 text-[13px] leading-4">
               <div className="h-px flex-1 bg-border" />
               <span className="bg-transparent text-muted-foreground">
                 <Trans>Or continue with</Trans>
@@ -423,7 +432,7 @@ export const SignInForm = ({
               type="button"
               size="lg"
               variant="outline"
-              className="border bg-background text-muted-foreground"
+              className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
               disabled={isSubmitting}
               onClick={onSignInWithGoogleClick}
             >
@@ -437,7 +446,7 @@ export const SignInForm = ({
               type="button"
               size="lg"
               variant="outline"
-              className="border bg-background text-muted-foreground"
+              className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
               disabled={isSubmitting}
               onClick={onSignInWithMicrosoftClick}
             >
@@ -451,7 +460,7 @@ export const SignInForm = ({
               type="button"
               size="lg"
               variant="outline"
-              className="border bg-background text-muted-foreground"
+              className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
               disabled={isSubmitting}
               onClick={onSignInWithOIDCClick}
             >
@@ -466,7 +475,7 @@ export const SignInForm = ({
             variant="outline"
             disabled={isSubmitting}
             loading={isPasskeyLoading}
-            className="border bg-background text-muted-foreground"
+            className="h-12 border-input bg-background font-medium text-[15px] text-foreground hover:bg-accent"
             onClick={onSignInWithPasskey}
           >
             {!isPasskeyLoading && <KeyRoundIcon className="mr-1 -ml-1 h-5 w-5" />}
@@ -476,11 +485,29 @@ export const SignInForm = ({
       </form>
 
       <Dialog open={isTwoFactorAuthenticationDialogOpen} onOpenChange={onCloseTwoFactorAuthenticationDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              <Trans>Two-Factor Authentication</Trans>
-            </DialogTitle>
+        <DialogContent
+          position="center"
+          className="w-[calc(100%-2rem)] gap-6 border-0 bg-card p-8 shadow-dialog sm:w-full sm:max-w-[448px]"
+          overlayClassName="bg-overlay backdrop-blur-none"
+        >
+          <DialogHeader className="gap-4 space-y-0 text-left">
+            <CrestChip size={40}>
+              <ShieldCheckIcon size={20} className="text-documenso-200" aria-hidden />
+            </CrestChip>
+
+            <div className="flex flex-col gap-1.5">
+              <DialogTitle className="text-xl tracking-[-0.01em]">
+                <Trans>Two-Factor Authentication</Trans>
+              </DialogTitle>
+
+              <DialogDescription className="text-[15px] leading-6">
+                {twoFactorAuthenticationMethod === 'totp' ? (
+                  <Trans>Enter the 6-digit code from your authenticator app.</Trans>
+                ) : (
+                  <Trans>Enter one of the backup codes you saved when you turned on two-factor authentication.</Trans>
+                )}
+              </DialogDescription>
+            </div>
           </DialogHeader>
 
           <form onSubmit={form.handleSubmit(onFormSubmit)}>
@@ -491,19 +518,29 @@ export const SignInForm = ({
                   name="totpCode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Token</FormLabel>
+                      <FormLabel>
+                        <Trans>Authentication code</Trans>
+                      </FormLabel>
                       <FormControl>
-                        <PinInput {...field} value={field.value ?? ''} maxLength={6}>
+                        <PinInput
+                          {...field}
+                          value={field.value ?? ''}
+                          maxLength={6}
+                          containerClassName="gap-1.5 sm:gap-2"
+                        >
                           {Array(6)
                             .fill(null)
                             .map((_, i) => (
                               <PinInputGroup key={i}>
-                                <PinInputSlot index={i} />
+                                <PinInputSlot
+                                  index={i}
+                                  className="h-14 w-10 bg-background font-sans font-semibold text-[22px] tabular-nums shadow-none sm:w-[52px]"
+                                />
                               </PinInputGroup>
                             ))}
                         </PinInput>
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-[13px] leading-[18px]" />
                     </FormItem>
                   )}
                 />
@@ -519,9 +556,13 @@ export const SignInForm = ({
                         <Trans>Backup Code</Trans>
                       </FormLabel>
                       <FormControl>
-                        <Input type="text" {...field} />
+                        <Input
+                          type="text"
+                          className="h-12 px-3.5 font-mono text-base tracking-[0.08em] md:text-base"
+                          {...field}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-[13px] leading-[18px]" />
                     </FormItem>
                   )}
                 />
@@ -540,8 +581,13 @@ export const SignInForm = ({
                 </div>
               )}
 
-              <DialogFooter className="mt-4">
-                <Button type="button" variant="secondary" onClick={onToggleTwoFactorAuthenticationMethodClick}>
+              <DialogFooter className="mt-6 gap-3 space-y-0 sm:space-x-0">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="h-12 bg-transparent px-5 font-medium text-[15px] text-link hover:bg-accent hover:text-link-hover"
+                  onClick={onToggleTwoFactorAuthenticationMethodClick}
+                >
                   {twoFactorAuthenticationMethod === 'totp' ? (
                     <Trans>Use Backup Code</Trans>
                   ) : (
@@ -549,7 +595,11 @@ export const SignInForm = ({
                   )}
                 </Button>
 
-                <Button type="submit" loading={isSubmitting}>
+                <Button
+                  type="submit"
+                  loading={isSubmitting}
+                  className="h-12 min-w-[104px] px-5 font-semibold text-[15px] shadow-button-primary hover:bg-documenso-700"
+                >
                   {isSubmitting ? <Trans>Signing in...</Trans> : <Trans>Sign In</Trans>}
                 </Button>
               </DialogFooter>

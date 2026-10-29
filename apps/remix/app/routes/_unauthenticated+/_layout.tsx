@@ -1,9 +1,18 @@
 import backgroundPattern from '@documenso/assets/images/background-pattern.png';
-import { Outlet } from 'react-router';
+import { Outlet, useMatches } from 'react-router';
 
 import { PublicLegalLinks } from '~/components/general/public-legal-links';
 
 export default function Layout() {
+  const matches = useMatches();
+
+  // Routes that render their own `AuthShell` opt out of the default chrome via `handle`.
+  const hasAuthShell = matches.some((match) => (match.handle as { hasAuthShell?: boolean } | undefined)?.hasAuthShell);
+
+  if (hasAuthShell) {
+    return <Outlet />;
+  }
+
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-between overflow-hidden px-4 py-12 md:p-12 lg:p-24">
       <div className="flex w-full flex-1 flex-col items-center justify-center">
@@ -19,7 +28,7 @@ export default function Layout() {
           />
         </div>
 
-        <div className="relative w-full flex items-center justify-center">
+        <div className="relative flex w-full items-center justify-center">
           <Outlet />
         </div>
       </div>

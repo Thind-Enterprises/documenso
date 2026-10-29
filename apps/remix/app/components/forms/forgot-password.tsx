@@ -57,7 +57,7 @@ export const ForgotPasswordForm = ({ className }: ForgotPasswordFormProps) => {
   return (
     <Form {...form}>
       <form className={cn('flex w-full flex-col gap-y-4', className)} onSubmit={form.handleSubmit(onFormSubmit)}>
-        <fieldset className="flex w-full flex-col gap-y-4" disabled={isSubmitting}>
+        <fieldset className="flex w-full flex-col gap-y-5" disabled={isSubmitting}>
           <FormField
             control={form.control}
             name="email"
@@ -67,15 +67,19 @@ export const ForgotPasswordForm = ({ className }: ForgotPasswordFormProps) => {
                   <Trans>Email</Trans>
                 </FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input type="email" className="h-12 px-3.5 text-base md:text-base" {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-[13px] leading-[18px]" />
               </FormItem>
             )}
           />
         </fieldset>
 
-        <Button size="lg" loading={isSubmitting}>
+        <Button
+          size="lg"
+          loading={isSubmitting}
+          className="mt-1 h-12 w-full font-semibold text-[15px] shadow-button-primary hover:bg-documenso-700"
+        >
           {isSubmitting ? <Trans>Sending Reset Email...</Trans> : <Trans>Reset Password</Trans>}
         </Button>
       </form>

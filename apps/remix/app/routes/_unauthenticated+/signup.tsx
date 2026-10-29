@@ -6,12 +6,16 @@ import {
 } from '@documenso/lib/constants/auth';
 import { isValidReturnTo, normalizeReturnTo } from '@documenso/lib/utils/is-valid-return-to';
 import { msg } from '@lingui/core/macro';
+import { Trans } from '@lingui/react/macro';
 import { redirect } from 'react-router';
 
 import { SignUpForm } from '~/components/forms/signup';
+import { AuthShell } from '~/components/general/auth/auth-shell';
 import { appMetaTags } from '~/utils/meta';
 
 import type { Route } from './+types/signup';
+
+export const handle = { hasAuthShell: true };
 
 export function meta() {
   return appMetaTags(msg`Sign Up`);
@@ -53,13 +57,21 @@ export default function SignUp({ loaderData }: Route.ComponentProps) {
   } = loaderData;
 
   return (
-    <SignUpForm
-      className="w-screen max-w-screen-2xl px-4 md:px-16 lg:-mt-16"
-      isEmailPasswordSignupEnabled={isEmailPasswordSignupEnabled}
-      isGoogleSignupEnabled={isGoogleSignupEnabled}
-      isMicrosoftSignupEnabled={isMicrosoftSignupEnabled}
-      isOidcSignupEnabled={isOidcSignupEnabled}
-      returnTo={returnTo}
-    />
+    <AuthShell
+      action={{
+        prompt: <Trans>Already have an account?</Trans>,
+        label: <Trans>Sign in</Trans>,
+        to: '/signin',
+      }}
+    >
+      <SignUpForm
+        className="w-full"
+        isEmailPasswordSignupEnabled={isEmailPasswordSignupEnabled}
+        isGoogleSignupEnabled={isGoogleSignupEnabled}
+        isMicrosoftSignupEnabled={isMicrosoftSignupEnabled}
+        isOidcSignupEnabled={isOidcSignupEnabled}
+        returnTo={returnTo}
+      />
+    </AuthShell>
   );
 }
