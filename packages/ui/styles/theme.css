@@ -9,7 +9,7 @@
     --foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 42%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
@@ -27,7 +27,7 @@
     --widget-foreground: 0 0% 95%;
 
     --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --input: 215.4 16.3% 58%;
 
     --primary: 243 75% 59%;
     --primary-foreground: 0 0% 100%;
@@ -38,7 +38,7 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 100% 50%;
+    --destructive: 3 79% 46%;
     --destructive-foreground: 210 40% 98%;
 
     --ring: 243 75% 59%;
@@ -139,6 +139,32 @@
     --new-surface-white: 0, 0%, 91%;
 
     --envelope-editor-background: 210 40% 98.04%;
+
+    /* Corteron auth redesign tokens */
+    --link: 244.5 57.9% 50.6%;
+    --link-hover: 243.7 54.5% 41.4%;
+    --success: 142 72% 29%;
+    --success-subtle: 140 60% 95.1%;
+    --destructive-subtle: 3.7 80% 96.1%;
+    --destructive-border: 5.1 76.1% 82%;
+    --overlay: 222.2 47.4% 11.2% / 0.55;
+    --auth-band: 225.9 100% 96.7%;
+    --auth-rule: 212.7 26.8% 83.9%;
+    --auth-spill: 238.7 83.5% 66.7% / 0.18;
+    --auth-accent-foreground: 244.5 57.9% 50.6%;
+    --auth-step-line: 228 96.5% 88.8%;
+    --auth-step-current: 225.9 100% 96.7%;
+    --auth-step-dot: 226.5 100% 93.9%;
+    --auth-step-ring: 243.4 75.4% 58.6% / 0.16;
+
+    --shadow-auth-card:
+      0 0 0 1px hsl(var(--border)), 0 1px 2px rgb(15 23 42 / 0.04), 0 32px 64px -32px rgb(30 27 75 / 0.22);
+    --shadow-auth-float: 0 0 0 1px hsl(var(--border)), 0 16px 32px -12px rgb(30 27 75 / 0.2);
+    --shadow-paper:
+      0 0 0 1px rgb(15 23 42 / 0.08), 0 40px 72px -28px rgb(30 27 75 / 0.35), 0 8px 16px -8px rgb(30 27 75 / 0.12);
+    --shadow-paper-sm: 0 0 0 1px #cbd5e1, 0 8px 16px -10px rgb(30 27 75 / 0.18);
+    --shadow-dialog: 0 0 0 1px hsl(var(--border)), 0 32px 64px -16px rgb(15 23 42 / 0.25);
+    --shadow-button-primary: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(30 27 75 / 0.4);
   }
 
   .dark:not(.dark-mode-disabled) {
@@ -146,7 +172,7 @@
     --foreground: 0 0% 97%;
 
     --muted: 240 20% 14%;
-    --muted-foreground: 0 0% 85%;
+    --muted-foreground: 240 10% 72%;
 
     --popover: 240 30% 8%;
     --popover-foreground: 0 0% 90%;
@@ -160,7 +186,7 @@
     --widget-foreground: 240 20% 14%;
 
     --border: 240 15% 18%;
-    --input: 240 15% 18%;
+    --input: 240 12% 42%;
 
     --field-border: 214.3 31.8% 91.4%;
 
@@ -185,6 +211,32 @@
     --gold: 47.9 95.8% 53.1%;
 
     --envelope-editor-background: 240 52% 4%;
+
+    /* Corteron auth redesign tokens */
+    --link: 234.5 89.5% 73.9%;
+    --link-hover: 229.7 93.5% 81.8%;
+    --success: 142 69% 58%;
+    --success-subtle: 142 69% 58% / 0.12;
+    --destructive-subtle: 0 87% 62% / 0.12;
+    --destructive-border: 0 87% 62% / 0.45;
+    --overlay: 240 52% 4% / 0.78;
+    --auth-band: 240 30% 8%;
+    --auth-rule: 240 16% 29.4%;
+    --auth-spill: 243.4 75.4% 58.6% / 0.3;
+    --auth-accent-foreground: 229.7 93.5% 81.8%;
+    --auth-step-line: 234.5 89.5% 73.9% / 0.35;
+    --auth-step-current: 234.5 89.5% 73.9% / 0.12;
+    --auth-step-dot: 234.5 89.5% 73.9% / 0.2;
+    --auth-step-ring: 234.5 89.5% 73.9% / 0.22;
+
+    --shadow-auth-card:
+      0 0 0 1px hsl(var(--border)), inset 0 1px 0 rgb(255 255 255 / 0.04), 0 32px 64px -24px rgb(0 0 0 / 0.8);
+    --shadow-auth-float:
+      0 0 0 1px hsl(var(--border)), inset 0 1px 0 rgb(255 255 255 / 0.05), 0 20px 40px -12px rgb(0 0 0 / 0.75);
+    --shadow-paper:
+      0 0 0 1px rgb(255 255 255 / 0.08), 0 48px 80px -24px rgb(0 0 0 / 0.85), 0 12px 24px -12px rgb(0 0 0 / 0.6);
+    --shadow-paper-sm: 0 0 0 1px rgb(255 255 255 / 0.08), 0 12px 24px -12px rgb(0 0 0 / 0.7);
+    --shadow-dialog: 0 0 0 1px hsl(var(--border)), 0 32px 64px -16px rgb(0 0 0 / 0.8);
   }
 }
 

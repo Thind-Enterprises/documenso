@@ -41,6 +41,27 @@ module.exports = {
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
+          subtle: 'hsl(var(--destructive-subtle))',
+          border: 'hsl(var(--destructive-border))',
+        },
+        link: {
+          DEFAULT: 'hsl(var(--link))',
+          hover: 'hsl(var(--link-hover))',
+        },
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          subtle: 'hsl(var(--success-subtle))',
+        },
+        overlay: 'hsl(var(--overlay))',
+        auth: {
+          band: 'hsl(var(--auth-band))',
+          rule: 'hsl(var(--auth-rule))',
+          spill: 'hsl(var(--auth-spill))',
+          accent: 'hsl(var(--auth-accent-foreground))',
+          'step-line': 'hsl(var(--auth-step-line))',
+          'step-current': 'hsl(var(--auth-step-current))',
+          'step-dot': 'hsl(var(--auth-step-dot))',
+          'step-ring': 'hsl(var(--auth-step-ring))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
@@ -130,7 +151,23 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      boxShadow: {
+        'auth-card': 'var(--shadow-auth-card)',
+        'auth-float': 'var(--shadow-auth-float)',
+        paper: 'var(--shadow-paper)',
+        'paper-sm': 'var(--shadow-paper-sm)',
+        dialog: 'var(--shadow-dialog)',
+        'button-primary': 'var(--shadow-button-primary)',
+      },
       keyframes: {
+        'signature-reveal': {
+          from: { clipPath: 'inset(0 100% 0 0)' },
+          to: { clipPath: 'inset(0 0 0 0)' },
+        },
+        'float-y': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
         'accordion-down': {
           from: { height: 0 },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -145,6 +182,9 @@ module.exports = {
         },
       },
       animation: {
+        'signature-reveal': 'signature-reveal 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.5s both',
+        'float-slow': 'float-y 9s ease-in-out infinite',
+        'float-slower': 'float-y 11s ease-in-out -4s infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'caret-blink': 'caret-blink 1.25s ease-out infinite',
