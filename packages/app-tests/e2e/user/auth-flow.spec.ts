@@ -49,8 +49,8 @@ test('[USER] can sign up with email and password', async ({ page }: { page: Page
   await page.getByRole('link', { name: 'Continue' }).click();
 
   // Expect to be redirected to their only team.
-  await page.waitForURL(`/t/${team.url}/documents`);
-  await expect(page).toHaveURL(`/t/${team.url}/documents`);
+  await page.waitForURL(`/t/${team.url}`);
+  await expect(page).toHaveURL(`/t/${team.url}`);
 });
 
 test('[USER] can sign in using email and password', async ({ page }: { page: Page }) => {
@@ -61,6 +61,6 @@ test('[USER] can sign in using email and password', async ({ page }: { page: Pag
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Sign In' }).click();
 
-  await page.waitForURL(`/t/${team.url}/documents`);
-  await expect(page).toHaveURL(`/t/${team.url}/documents`);
+  await page.waitForURL(`/t/${team.url}`);
+  await expect(page).toHaveURL(`/t/${team.url}`);
 });

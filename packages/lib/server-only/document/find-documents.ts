@@ -38,6 +38,10 @@ export type FindDocumentsOptions = {
   query?: string;
   folderId?: string;
   /**
+   * When true, ignore `folderId` and include envelopes from every folder, including the root.
+   */
+  includeAllFolders?: boolean;
+  /**
    * When true, restrict results to envelopes with at least one recipient whose signing
    * link has expired. Orthogonal to `status` — applied additively.
    */
@@ -121,6 +125,7 @@ export const findDocuments = async ({
   senderIds,
   query = '',
   folderId,
+  includeAllFolders = false,
   hasExpiredRecipients,
   useWindowedCount = true,
 }: FindDocumentsOptions) => {
@@ -154,8 +159,12 @@ export const findDocuments = async ({
     qb = qb.where('Envelope.type', '=', sql.lit(EnvelopeType.DOCUMENT));
 
     // Folder filter
-    qb =
-      folderId !== undefined ? qb.where('Envelope.folderId', '=', folderId) : qb.where('Envelope.folderId', 'is', null);
+    if (!includeAllFolders) {
+      qb =
+        folderId !== undefined
+          ? qb.where('Envelope.folderId', '=', folderId)
+          : qb.where('Envelope.folderId', 'is', null);
+    }
 
     // Period filter
     if (period) {

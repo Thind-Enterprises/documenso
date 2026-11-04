@@ -24,6 +24,10 @@ export type TInboxStatus = z.infer<typeof ZInboxStatusSchema>;
 
 export const ZFindInboxRequestSchema = ZFindSearchParamsSchema.extend({
   status: ZInboxStatusSchema.describe('Filter the inbox by document status.').optional(),
+  actionRequired: z
+    .boolean()
+    .describe('Only return pending documents the user has not signed, approved or viewed yet.')
+    .optional(),
 });
 
 export const ZFindInboxResponseSchema = ZFindResultResponse.extend({

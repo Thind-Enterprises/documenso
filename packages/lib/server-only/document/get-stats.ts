@@ -58,6 +58,10 @@ export type GetStatsInput = {
   period?: PeriodSelectorValue;
   search?: string;
   folderId?: string;
+  /**
+   * When true, ignore `folderId` and count envelopes from every folder, including the root.
+   */
+  includeAllFolders?: boolean;
   senderIds?: number[];
 };
 
@@ -81,7 +85,15 @@ const cappedCount = async (qb: EnvelopeQueryBuilder): Promise<number> => {
   return Math.min(Number(result.total ?? 0), STATS_COUNT_CAP);
 };
 
-export const getStats = async ({ userId, teamId, period, search = '', folderId, senderIds }: GetStatsInput) => {
+export const getStats = async ({
+  userId,
+  teamId,
+  period,
+  search = '',
+  folderId,
+  includeAllFolders = false,
+  senderIds,
+}: GetStatsInput) => {
   const user = await prisma.user.findFirstOrThrow({
     where: { id: userId },
     select: { id: true, email: true },
@@ -106,8 +118,12 @@ export const getStats = async ({ userId, teamId, period, search = '', folderId, 
     qb = qb.where('Envelope.type', '=', sql.lit(EnvelopeType.DOCUMENT));
 
     // Folder filter
-    qb =
-      folderId !== undefined ? qb.where('Envelope.folderId', '=', folderId) : qb.where('Envelope.folderId', 'is', null);
+    if (!includeAllFolders) {
+      qb =
+        folderId !== undefined
+          ? qb.where('Envelope.folderId', '=', folderId)
+          : qb.where('Envelope.folderId', 'is', null);
+    }
 
     // Period filter
     if (period) {

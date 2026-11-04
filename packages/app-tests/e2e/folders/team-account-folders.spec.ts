@@ -18,7 +18,7 @@ test('[TEAMS]: create document folder button is visible', async ({ page }) => {
   await apiSignin({
     page,
     email: teamOwner.email,
-    redirectPath: `/t/${team.url}`,
+    redirectPath: `/t/${team.url}/documents`,
   });
 
   await expect(page.getByTestId('folder-create-button')).toBeVisible();
@@ -30,7 +30,7 @@ test('[TEAMS]: can create document folder', async ({ page }) => {
   await apiSignin({
     page,
     email: teamOwner.email,
-    redirectPath: `/t/${team.url}`,
+    redirectPath: `/t/${team.url}/documents`,
   });
 
   await page.getByTestId('folder-create-button').click();

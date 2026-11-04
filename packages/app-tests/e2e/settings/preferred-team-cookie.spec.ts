@@ -62,7 +62,7 @@ test.describe('Preferred team cookie', () => {
     await expect.poll(() => readPreferredTeamUrl(page)).toBe(teamB.url);
 
     await page.goto('/');
-    await expect(page).toHaveURL(`/t/${teamB.url}/documents`);
+    await expect(page).toHaveURL(`/t/${teamB.url}`);
   });
 
   test('switching team in settings records the newly selected team', async ({ page }) => {
@@ -77,6 +77,6 @@ test.describe('Preferred team cookie', () => {
     expect(await readPreferredTeamUrl(page)).toBe(teamA.url);
 
     await page.goto('/');
-    await expect(page).toHaveURL(`/t/${teamA.url}/documents`);
+    await expect(page).toHaveURL(`/t/${teamA.url}`);
   });
 });

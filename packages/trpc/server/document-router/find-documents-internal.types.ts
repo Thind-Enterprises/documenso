@@ -10,6 +10,10 @@ export const ZFindDocumentsInternalRequestSchema = ZFindDocumentsRequestSchema.e
   senderIds: z.array(z.number()).optional(),
   status: z.nativeEnum(ExtendedDocumentStatus).optional(),
   folderId: z.string().optional(),
+  includeAllFolders: z
+    .boolean()
+    .optional()
+    .describe('Ignore the folder filter and include documents from every folder.'),
 });
 
 export const ZFindDocumentsInternalResponseSchema = ZFindResultResponse.extend({

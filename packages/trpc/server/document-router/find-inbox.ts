@@ -2,7 +2,7 @@ import type { FindResultResponse } from '@documenso/lib/types/search-params';
 import { mapEnvelopesToDocumentMany } from '@documenso/lib/utils/document';
 import { prisma } from '@documenso/prisma';
 import type { Envelope, Prisma } from '@prisma/client';
-import { DocumentStatus, EnvelopeType, RecipientRole } from '@prisma/client';
+import { DocumentStatus, EnvelopeType, RecipientRole, SigningStatus } from '@prisma/client';
 
 import { authenticatedProcedure } from '../trpc';
 import { type TInboxStatus, ZFindInboxRequestSchema, ZFindInboxResponseSchema } from './find-inbox.types';
@@ -11,7 +11,7 @@ export const findInboxRoute = authenticatedProcedure
   .input(ZFindInboxRequestSchema)
   .output(ZFindInboxResponseSchema)
   .query(async ({ input, ctx }) => {
-    const { page, perPage, query, status } = input;
+    const { page, perPage, query, status, actionRequired } = input;
 
     const userId = ctx.user.id;
 
@@ -21,6 +21,7 @@ export const findInboxRoute = authenticatedProcedure
       perPage,
       query,
       status,
+      actionRequired,
     });
 
     return {
@@ -42,13 +43,27 @@ export type FindInboxOptions = {
    * Restrict results to a single status. When omitted, every non-draft status is returned.
    */
   status?: TInboxStatus;
+
+  /**
+   * Only return pending documents where the user still has to act.
+   * Overrides `status` with PENDING.
+   */
+  actionRequired?: boolean;
   orderBy?: {
     column: keyof Omit<Envelope, 'envelope'>;
     direction: 'asc' | 'desc';
   };
 };
 
-export const findInbox = async ({ userId, page = 1, perPage = 10, query = '', status, orderBy }: FindInboxOptions) => {
+export const findInbox = async ({
+  userId,
+  page = 1,
+  perPage = 10,
+  query = '',
+  status,
+  actionRequired = false,
+  orderBy,
+}: FindInboxOptions) => {
   const user = await prisma.user.findFirstOrThrow({
     where: {
       id: userId,
@@ -65,9 +80,11 @@ export const findInbox = async ({ userId, page = 1, perPage = 10, query = '', st
 
   const whereClause: Prisma.EnvelopeWhereInput = {
     type: EnvelopeType.DOCUMENT,
-    status: status ?? {
-      not: DocumentStatus.DRAFT,
-    },
+    status: actionRequired
+      ? DocumentStatus.PENDING
+      : (status ?? {
+          not: DocumentStatus.DRAFT,
+        }),
     deletedAt: null,
     recipients: {
       some: {
@@ -75,6 +92,7 @@ export const findInbox = async ({ userId, page = 1, perPage = 10, query = '', st
         role: {
           not: RecipientRole.CC,
         },
+        ...(actionRequired ? { signingStatus: SigningStatus.NOT_SIGNED } : {}),
       },
     },
   };

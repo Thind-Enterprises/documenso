@@ -2,7 +2,6 @@ import { Button } from '@documenso/ui/primitives/button';
 
 import { Plural, Trans } from '@lingui/react/macro';
 import { RecipientRole } from '@prisma/client';
-import { motion } from 'framer-motion';
 import { LucideChevronDown, LucideChevronUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { match } from 'ts-pattern';
@@ -12,6 +11,7 @@ import { useEmbedSigningContext } from '~/components/embed/embed-signing-context
 import { BrandingLogo } from '../branding-logo';
 import EnvelopeSignerForm from '../envelope-signing/envelope-signer-form';
 import { EnvelopeSignerCompleteDialog } from '../envelope-signing/envelope-signing-complete-dialog';
+import { EnvelopeSigningProgress } from '../envelope-signing/envelope-signing-progress';
 import { useRequiredEnvelopeSigningContext } from './envelope-signing-provider';
 
 export const DocumentSigningMobileWidget = () => {
@@ -19,7 +19,7 @@ export const DocumentSigningMobileWidget = () => {
 
   const { hidePoweredBy = true } = useEmbedSigningContext() || {};
 
-  const { recipientFieldsRemaining, recipient, requiredRecipientFields } = useRequiredEnvelopeSigningContext();
+  const { recipientFieldsRemaining, recipient } = useRequiredEnvelopeSigningContext();
 
   /**
    * Pre open the widget for assistants to let them know it's there.
@@ -33,7 +33,7 @@ export const DocumentSigningMobileWidget = () => {
   return (
     <div className="pointer-events-none fixed right-0 bottom-0 left-0 z-50 flex justify-center px-2 pb-2 sm:px-4 sm:pb-6">
       <div className="pointer-events-auto w-full max-w-[760px]">
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
+        <div className="overflow-hidden rounded-xl bg-card shadow-dialog">
           {/* Main Header Bar */}
           <div className="flex items-center justify-between gap-4 p-4">
             <div className="flex-1">
@@ -54,7 +54,7 @@ export const DocumentSigningMobileWidget = () => {
                 )}
 
                 <div>
-                  <h2 className="font-semibold text-foreground text-lg">
+                  <h2 className="font-semibold text-base text-foreground">
                     {match(recipient.role)
                       .with(RecipientRole.VIEWER, () => <Trans>View Document</Trans>)
                       .with(RecipientRole.SIGNER, () => <Trans>Sign Document</Trans>)
@@ -89,20 +89,7 @@ export const DocumentSigningMobileWidget = () => {
           </div>
 
           {/* Progress Bar */}
-          {recipient.role !== RecipientRole.VIEWER && recipient.role !== RecipientRole.ASSISTANT && (
-            <div className="px-4 pb-3">
-              <div className="relative h-[4px] rounded-md bg-muted">
-                <motion.div
-                  layout="size"
-                  layoutId="document-signing-mobile-widget-progress-bar"
-                  className="absolute inset-y-0 left-0 bg-primary"
-                  style={{
-                    width: `${requiredRecipientFields.length === 0 ? 100 : 100 - (100 / requiredRecipientFields.length) * (recipientFieldsRemaining.length ?? 0)}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          <EnvelopeSigningProgress variant="bar" className="px-4 pb-3" />
 
           {/* Expandable Content */}
           {isExpanded && (
