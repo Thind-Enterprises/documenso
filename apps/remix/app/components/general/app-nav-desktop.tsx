@@ -46,18 +46,25 @@ export const AppNavDesktop = ({ className, setIsCommandMenuOpen, ...props }: App
 
     return [
       {
+        href: `/t/${teamUrl}`,
+        label: msg`Home`,
+        isExact: true,
+      },
+      {
         href: `/t/${teamUrl}/documents`,
         label: msg`Documents`,
+        isExact: false,
       },
       {
         href: `/t/${teamUrl}/templates`,
         label: msg`Templates`,
+        isExact: false,
       },
     ];
   }, [currentTeam, organisations]);
 
   return (
-    <div className={cn('ml-8 hidden flex-1 items-center gap-x-12 md:flex md:justify-between', className)} {...props}>
+    <div className={cn('ml-6 hidden flex-1 items-center gap-x-12 md:flex md:justify-between', className)} {...props}>
       <div>
         <AnimatePresence>
           {menuNavigationLinks.length > 0 && (
@@ -65,22 +72,30 @@ export const AppNavDesktop = ({ className, setIsCommandMenuOpen, ...props }: App
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex items-baseline gap-x-6"
+              className="flex items-center gap-x-1"
             >
-              {menuNavigationLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  to={href}
-                  className={cn(
-                    'rounded-md font-medium text-muted-foreground leading-5 ring-offset-background hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-muted-foreground/60',
-                    {
-                      'text-foreground dark:text-muted-foreground': pathname?.startsWith(href),
-                    },
-                  )}
-                >
-                  {_(label)}
-                </Link>
-              ))}
+              {menuNavigationLinks.map(({ href, label, isExact }) => {
+                const isActive = isExact
+                  ? pathname === href || pathname === `${href}/`
+                  : pathname === href || pathname?.startsWith(`${href}/`);
+
+                return (
+                  <Link
+                    key={href}
+                    to={href}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={cn(
+                      'rounded-md px-3 py-1.5 font-medium text-muted-foreground text-sm leading-5 ring-offset-background transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      {
+                        'bg-auth-band text-auth-accent hover:bg-auth-band hover:text-auth-accent dark:bg-primary/15 dark:text-foreground':
+                          isActive,
+                      },
+                    )}
+                  >
+                    {_(label)}
+                  </Link>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

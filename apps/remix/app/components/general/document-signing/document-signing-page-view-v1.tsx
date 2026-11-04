@@ -28,6 +28,7 @@ import { LucideChevronDown, LucideChevronUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { match, P } from 'ts-pattern';
 
+import { BrandLockup } from '~/components/general/auth/brand-lockup';
 import { DocumentSigningAttachmentsPopover } from '~/components/general/document-signing/document-signing-attachments-popover';
 import { DocumentSigningAutoSign } from '~/components/general/document-signing/document-signing-auto-sign';
 import { DocumentSigningCheckboxField } from '~/components/general/document-signing/document-signing-checkbox-field';
@@ -148,12 +149,14 @@ export const DocumentSigningPageViewV1 = ({
   return (
     <DocumentSigningRecipientProvider recipient={recipient} targetSigner={targetSigner}>
       <div className="mx-auto w-full max-w-screen-xl sm:px-6">
-        {hasCustomBrandingLogo && (
+        {hasCustomBrandingLogo ? (
           <img
             src={`/api/branding/logo/team/${document.teamId}`}
             alt={`${document.team.name}'s Logo`}
             className="mb-4 h-12 w-12 md:mb-2"
           />
+        ) : (
+          <BrandLockup size="sm" className="mt-2 mb-6 sm:mt-6" />
         )}
         <h1
           className="block max-w-[20rem] truncate font-semibold text-2xl sm:mt-4 md:max-w-[30rem] md:text-3xl"

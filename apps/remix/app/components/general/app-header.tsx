@@ -7,7 +7,7 @@ import { InboxIcon, MenuIcon, SearchIcon } from 'lucide-react';
 import { type HTMLAttributes, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 
-import { BrandingLogo } from '~/components/general/branding-logo';
+import { BrandLockup } from '~/components/general/auth/brand-lockup';
 
 import { AppCommandMenu } from './app-command-menu';
 import { AppNavDesktop } from './app-nav-desktop';
@@ -65,7 +65,7 @@ export const Header = ({ className, fullWidth = false, ...props }: HeaderProps) 
           to={getRootHref(params)}
           className="hidden rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline"
         >
-          <BrandingLogo className="h-6 w-auto" />
+          <BrandLockup size="sm" />
         </Link>
 
         <AppNavDesktop setIsCommandMenuOpen={setIsCommandMenuOpen} />

@@ -8,30 +8,36 @@ import {
   DropdownMenuTrigger,
 } from '@documenso/ui/primitives/dropdown-menu';
 import { Separator } from '@documenso/ui/primitives/separator';
-import { Plural, Trans } from '@lingui/react/macro';
+import { Trans } from '@lingui/react/macro';
 import { EnvelopeType, RecipientRole } from '@prisma/client';
-import { BanIcon, DownloadCloudIcon } from 'lucide-react';
+import { BanIcon, DownloadCloudIcon, SparklesIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { match } from 'ts-pattern';
 
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
 import { useEmbedSigningContext } from '~/components/embed/embed-signing-context';
-import { BrandingLogo } from '~/components/general/branding-logo';
+import { BrandLockup } from '~/components/general/auth/brand-lockup';
+import { CrestChip } from '~/components/general/auth/crest-chip';
 import { PublicLegalLinksDropdownMenuItems } from '~/components/general/public-legal-links';
 
-import { BrandingLogoIcon } from '../branding-logo-icon';
 import { DocumentSigningRejectDialog } from '../document-signing/document-signing-reject-dialog';
 import { useRequiredEnvelopeSigningContext } from '../document-signing/envelope-signing-provider';
+import { EnvelopeSigningAiSummarySheet } from './envelope-signing-ai-summary-sheet';
 import { EnvelopeSignerCompleteDialog } from './envelope-signing-complete-dialog';
+import { EnvelopeSigningProgress } from './envelope-signing-progress';
 
-export const EnvelopeSignerHeader = () => {
-  const { envelopeData, envelope, recipientFieldsRemaining, recipient } = useRequiredEnvelopeSigningContext();
+export type EnvelopeSignerHeaderProps = {
+  isAiSummaryEnabled?: boolean;
+};
+
+export const EnvelopeSignerHeader = ({ isAiSummaryEnabled = false }: EnvelopeSignerHeaderProps) => {
+  const { envelopeData, envelope, recipient } = useRequiredEnvelopeSigningContext();
 
   const isEmbedSigning = useEmbedSigningContext() !== null;
   const hasCustomBrandingLogo = envelopeData.settings.brandingEnabled && Boolean(envelopeData.settings.brandingLogo);
 
   return (
-    <nav className="embed--DocumentWidgetHeader flex max-w-screen flex-row justify-between border-border border-b bg-background px-4 py-3 md:px-6">
+    <nav className="embed--DocumentWidgetHeader flex h-16 max-w-screen flex-row items-center justify-between border-border border-b bg-background px-4 md:px-6">
       {/* Left side - Logo and title */}
       <div className="flex min-w-0 flex-1 items-center space-x-2 md:w-auto md:flex-none">
         {!isEmbedSigning &&
@@ -42,22 +48,27 @@ export const EnvelopeSignerHeader = () => {
               className="h-6 w-auto flex-shrink-0"
             />
           ) : (
-            <Link to="/" className="flex-shrink-0">
-              <BrandingLogo className="hidden h-6 w-auto md:block" />
-              <BrandingLogoIcon className="h-6 w-auto md:hidden" />
+            <Link
+              to="/"
+              className="flex-shrink-0 rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <BrandLockup size="sm" className="hidden md:flex" />
+              <CrestChip size={32} className="md:hidden" />
             </Link>
           ))}
 
-        <h1 title={envelope.title} className="min-w-0 truncate font-semibold text-base text-foreground md:hidden">
+        <h1 title={envelope.title} className="min-w-0 truncate pl-1 font-semibold text-base text-foreground md:hidden">
           {envelope.title}
         </h1>
 
-        {!isEmbedSigning && <Separator orientation="vertical" className="hidden h-6 md:block" />}
+        {!isEmbedSigning && <Separator orientation="vertical" className="!mx-4 hidden h-6 md:block" />}
 
-        <div className="hidden items-center space-x-2 md:flex">
-          <h1 className="whitespace-nowrap font-medium text-foreground text-sm">{envelope.title}</h1>
+        <div className="hidden min-w-0 items-center space-x-2 md:flex">
+          <h1 title={envelope.title} className="truncate font-medium text-foreground text-sm lg:max-w-[28rem]">
+            {envelope.title}
+          </h1>
 
-          <Badge>
+          <Badge variant="secondary" size="small" className="shrink-0">
             {match(recipient.role)
               .with(RecipientRole.VIEWER, () => <Trans>Viewer</Trans>)
               .with(RecipientRole.SIGNER, () => <Trans>Signer</Trans>)
@@ -69,23 +80,21 @@ export const EnvelopeSignerHeader = () => {
       </div>
 
       {/* Right side - Desktop content */}
-      <div className="hidden items-center space-x-2 lg:flex">
-        <p className="mr-2 flex-shrink-0 text-muted-foreground text-sm">
-          <Plural one="1 Field Remaining" other="# Fields Remaining" value={recipientFieldsRemaining.length} />
-        </p>
+      <div className="hidden items-center gap-3 lg:flex">
+        <EnvelopeSigningProgress variant="compact" />
 
         <EnvelopeSignerCompleteDialog />
       </div>
 
       {/* Mobile Actions button */}
       <div className="flex-shrink-0 lg:hidden">
-        <MobileDropdownMenu />
+        <MobileDropdownMenu isAiSummaryEnabled={isAiSummaryEnabled} />
       </div>
     </nav>
   );
 };
 
-const MobileDropdownMenu = () => {
+const MobileDropdownMenu = ({ isAiSummaryEnabled }: { isAiSummaryEnabled: boolean }) => {
   const { envelope, recipient } = useRequiredEnvelopeSigningContext();
 
   const embedSigningContext = useEmbedSigningContext();
@@ -102,6 +111,19 @@ const MobileDropdownMenu = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
+        {isAiSummaryEnabled && (
+          <EnvelopeSigningAiSummarySheet
+            trigger={
+              <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
+                <div>
+                  <SparklesIcon className="mr-2 h-4 w-4" />
+                  <Trans>Summarize with AI</Trans>
+                </div>
+              </DropdownMenuItem>
+            }
+          />
+        )}
+
         <EnvelopeDownloadDialog
           envelopeId={envelope.id}
           envelopeStatus={envelope.status}

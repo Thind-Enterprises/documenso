@@ -6,7 +6,6 @@ import { Button } from '@documenso/ui/primitives/button';
 import { Separator } from '@documenso/ui/primitives/separator';
 import { Plural, Trans, useLingui } from '@lingui/react/macro';
 import { EnvelopeType, RecipientRole } from '@prisma/client';
-import { motion } from 'framer-motion';
 import {
   ArrowLeftIcon,
   BanIcon,
@@ -14,6 +13,8 @@ import {
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
   PaperclipIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
@@ -38,11 +39,18 @@ import { DocumentSigningAttachmentsPopover } from '../document-signing/document-
 import { EnvelopeItemSelector } from '../envelope-editor/envelope-file-selector';
 import EnvelopeSignerForm from '../envelope-signing/envelope-signer-form';
 import { EnvelopeSignerHeader } from '../envelope-signing/envelope-signer-header';
+import { EnvelopeSigningAiSummarySheet } from '../envelope-signing/envelope-signing-ai-summary-sheet';
+import { EnvelopeSigningProgress } from '../envelope-signing/envelope-signing-progress';
+import { EnvelopeSigningRequestSummary } from '../envelope-signing/envelope-signing-request-summary';
 import { DocumentSigningMobileWidget } from './document-signing-mobile-widget';
 import { DocumentSigningRejectDialog } from './document-signing-reject-dialog';
 import { useRequiredEnvelopeSigningContext } from './envelope-signing-provider';
 
-export const DocumentSigningPageViewV2 = () => {
+export type DocumentSigningPageViewV2Props = {
+  isAiSummaryEnabled?: boolean;
+};
+
+export const DocumentSigningPageViewV2 = ({ isAiSummaryEnabled = false }: DocumentSigningPageViewV2Props) => {
   const { envelopeItems, currentEnvelopeItem, setCurrentEnvelopeItem } = useCurrentEnvelopeRender();
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +61,6 @@ export const DocumentSigningPageViewV2 = () => {
     recipient,
     recipientFields,
     recipientFieldsRemaining,
-    requiredRecipientFields,
     selectedAssistantRecipientFields,
   } = useRequiredEnvelopeSigningContext();
 
@@ -81,7 +88,7 @@ export const DocumentSigningPageViewV2 = () => {
   }, [recipientFieldsRemaining, selectedAssistantRecipientFields, currentEnvelopeItem]);
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50 dark:bg-background">
+    <div className="min-h-screen w-screen bg-envelope-editor-background dark:bg-background">
       <SignFieldEmailDialog.Root />
       <SignFieldTextDialog.Root />
       <SignFieldNumberDialog.Root />
@@ -91,7 +98,7 @@ export const DocumentSigningPageViewV2 = () => {
       <SignFieldSignatureDialog.Root />
       <SignFieldCheckboxDialog.Root />
 
-      <EnvelopeSignerHeader />
+      <EnvelopeSignerHeader isAiSummaryEnabled={isAiSummaryEnabled && !isDirectTemplate} />
 
       {/* Main Content Area */}
       <div className="flex h-[calc(100vh-4rem)] w-screen">
@@ -115,46 +122,64 @@ export const DocumentSigningPageViewV2 = () => {
             </div>
           )}
 
-          <div className={cn('flex flex-1 flex-col overflow-hidden py-4', isSidebarCollapsed && 'invisible w-0')}>
+          <div
+            className={cn('flex min-h-0 flex-1 flex-col overflow-y-auto py-4', isSidebarCollapsed && 'invisible w-0')}
+          >
             <div className="px-4">
-              <h3 className="flex items-end justify-between font-semibold text-foreground text-sm">
-                {match(recipient.role)
-                  .with(RecipientRole.VIEWER, () => <Trans>View Document</Trans>)
-                  .with(RecipientRole.SIGNER, () => <Trans>Sign Document</Trans>)
-                  .with(RecipientRole.APPROVER, () => <Trans>Approve Document</Trans>)
-                  .with(RecipientRole.ASSISTANT, () => <Trans>Assist Document</Trans>)
-                  .otherwise(() => null)}
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="font-semibold text-foreground text-sm">
+                  {match(recipient.role)
+                    .with(RecipientRole.VIEWER, () => <Trans>View Document</Trans>)
+                    .with(RecipientRole.SIGNER, () => <Trans>Sign Document</Trans>)
+                    .with(RecipientRole.APPROVER, () => <Trans>Approve Document</Trans>)
+                    .with(RecipientRole.ASSISTANT, () => <Trans>Assist Document</Trans>)
+                    .otherwise(() => null)}
+                </h3>
 
-                <div className="ml-2 flex items-center gap-1">
-                  <span className="rounded border bg-muted/50 px-2 py-0.5 text-muted-foreground text-xs">
-                    <Plural
-                      value={recipientFieldsRemaining.length}
-                      one="1 Field Remaining"
-                      other="# Fields Remaining"
-                    />
-                  </span>
-
-                  <Button
-                    variant="ghost"
-                    className="h-7 w-7 p-0"
-                    aria-label={t`Collapse sidebar`}
-                    onClick={() => setIsSidebarCollapsed(true)}
-                  >
-                    <PanelLeftCloseIcon className="h-4 w-4" />
-                  </Button>
-                </div>
-              </h3>
-
-              <div className="relative my-4 h-[4px] rounded-md bg-muted">
-                <motion.div
-                  layout="size"
-                  layoutId="document-flow-container-step"
-                  className="absolute inset-y-0 left-0 bg-primary"
-                  style={{
-                    width: `${requiredRecipientFields.length === 0 ? 100 : 100 - (100 / requiredRecipientFields.length) * (recipientFieldsRemaining.length ?? 0)}%`,
-                  }}
-                />
+                <Button
+                  variant="ghost"
+                  className="h-7 w-7 p-0"
+                  aria-label={t`Collapse sidebar`}
+                  onClick={() => setIsSidebarCollapsed(true)}
+                >
+                  <PanelLeftCloseIcon className="h-4 w-4" />
+                </Button>
               </div>
+
+              {!isDirectTemplate && <EnvelopeSigningRequestSummary className="mt-3" />}
+
+              <EnvelopeSigningProgress variant="card" className="mt-4" />
+
+              {isAiSummaryEnabled && !isDirectTemplate && (
+                <div className="mt-4 flex flex-col gap-3 rounded-lg border border-border bg-background p-4">
+                  <div className="flex items-start gap-3">
+                    <span
+                      aria-hidden
+                      className="inline-flex size-8 shrink-0 items-center justify-center rounded-md bg-auth-band text-auth-accent"
+                    >
+                      <SparklesIcon className="size-4" />
+                    </span>
+
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-foreground text-sm">
+                        <Trans>Understand before you sign</Trans>
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        <Trans>Get a plain-language summary and the clauses worth reading carefully.</Trans>
+                      </span>
+                    </div>
+                  </div>
+
+                  <EnvelopeSigningAiSummarySheet
+                    trigger={
+                      <Button type="button" variant="outline" size="sm" className="w-full">
+                        <SparklesIcon className="mr-2 size-4" aria-hidden />
+                        <Trans>Summarize with AI</Trans>
+                      </Button>
+                    }
+                  />
+                </div>
+              )}
 
               <div className="embed--DocumentWidgetContent mt-6 space-y-3">
                 <EnvelopeSignerForm />
@@ -233,7 +258,14 @@ export const DocumentSigningPageViewV2 = () => {
                 </div>
               )}
 
-              {!isEmbed && <PublicLegalLinks className="mt-4 justify-start px-4 pt-4" />}
+              {!isEmbed && (
+                <p className="mt-4 flex items-center gap-1.5 px-4 text-muted-foreground text-xs">
+                  <ShieldCheckIcon className="size-3.5 text-success" aria-hidden />
+                  <Trans>Secured with a signing certificate and audit log</Trans>
+                </p>
+              )}
+
+              {!isEmbed && <PublicLegalLinks className="mt-3 justify-start px-4 pt-3" />}
             </div>
           </div>
         </div>

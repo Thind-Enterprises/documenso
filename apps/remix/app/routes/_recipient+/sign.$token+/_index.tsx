@@ -8,7 +8,7 @@ import { readCscSadSessionFromRequest } from '@documenso/ee/server-only/signing/
 import { readCscServiceSessionFromRequest } from '@documenso/ee/server-only/signing/csc/cookies/service-session-cookie';
 import { EnvelopeRenderProvider } from '@documenso/lib/client-only/providers/envelope-render-provider';
 import { useOptionalSession } from '@documenso/lib/client-only/providers/session';
-import { IS_INSTANCE_CSC_MODE } from '@documenso/lib/constants/app';
+import { IS_AI_FEATURES_CONFIGURED, IS_INSTANCE_CSC_MODE } from '@documenso/lib/constants/app';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { loadRecipientBrandingByTeamId } from '@documenso/lib/server-only/branding/load-recipient-branding';
 import { getDocumentAndSenderByToken } from '@documenso/lib/server-only/document/get-document-by-token';
@@ -323,9 +323,16 @@ const handleV2Loader = async ({ params, request }: Route.LoaderArgs) => {
     }
   }
 
+  const isAiSummaryEnabled =
+    IS_AI_FEATURES_CONFIGURED() &&
+    (await getTeamSettings({ teamId: envelope.teamId })
+      .then((settings) => settings.aiFeaturesEnabled)
+      .catch(() => false));
+
   return {
     isDocumentAccessValid: true,
     envelopeForSigning,
+    isAiSummaryEnabled,
   } as const;
 };
 
@@ -605,7 +612,7 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
           envelopeItems={envelope.envelopeItems}
           token={recipient.token}
         >
-          <DocumentSigningPageViewV2 />
+          <DocumentSigningPageViewV2 isAiSummaryEnabled={'isAiSummaryEnabled' in data && data.isAiSummaryEnabled} />
         </EnvelopeRenderProvider>
       </DocumentSigningAuthProvider>
     </EnvelopeSigningProvider>

@@ -500,6 +500,7 @@ model Envelope {
   documentMeta   DocumentMeta @relation(fields: [documentMetaId], references: [id])
 
   envelopeAttachments EnvelopeAttachment[]
+  aiSummary           EnvelopeAiSummary?
 
   @@index([type])
   @@index([status])
@@ -507,6 +508,24 @@ model Envelope {
   @@index([teamId])
   @@index([folderId])
   @@index([createdAt])
+}
+
+/// Cached AI-generated plain-language summary of an envelope's documents.
+model EnvelopeAiSummary {
+  id String @id @default(cuid())
+
+  envelopeId String   @unique
+  envelope   Envelope @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+
+  /// Fingerprint of the envelope items the summary was generated from, used to detect stale summaries.
+  sourceHash String
+  language   String
+  model      String
+  /// Validated with ZEnvelopeAiSummaryContentSchema from @documenso/lib when read.
+  summary    Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EnvelopeItem {

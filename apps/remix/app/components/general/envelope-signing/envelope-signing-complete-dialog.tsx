@@ -2,8 +2,6 @@ import { useAnalytics } from '@documenso/lib/client-only/hooks/use-analytics';
 import type { EmbedPopupAuthCscOptions } from '@documenso/lib/client-only/hooks/use-embed-popup-auth';
 import { openPopupWindow, useEmbedPopupAuth } from '@documenso/lib/client-only/hooks/use-embed-popup-auth';
 import { useIsFramed } from '@documenso/lib/client-only/hooks/use-is-framed';
-import { useCurrentEnvelopeRender } from '@documenso/lib/client-only/providers/envelope-render-provider';
-import { PDF_VIEWER_CONTENT_SELECTOR } from '@documenso/lib/constants/pdf-viewer';
 import { isBase64Image } from '@documenso/lib/constants/signatures';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import type { TRecipientAccessAuth } from '@documenso/lib/types/document-auth';
@@ -21,6 +19,7 @@ import { useEmbedSigningContext } from '~/components/embed/embed-signing-context
 import { DocumentSigningCompleteDialog } from '../document-signing/document-signing-complete-dialog';
 import { useRequiredEnvelopeSigningContext } from '../document-signing/envelope-signing-provider';
 import { EnvelopeSigningCscStatus } from './envelope-signing-csc-status';
+import { useGoToNextSigningField } from './use-go-to-next-signing-field';
 
 type PendingCscSigning = Extract<EmbedPopupAuthCscOptions, { scope: 'credential' }>;
 
@@ -34,18 +33,8 @@ export const EnvelopeSignerCompleteDialog = () => {
 
   const [searchParams] = useSearchParams();
 
-  const {
-    isDirectTemplate,
-    envelope,
-    setShowPendingFieldTooltip,
-    recipientFieldsRemaining,
-    recipient,
-    nextRecipient,
-    email,
-    fullName,
-  } = useRequiredEnvelopeSigningContext();
-
-  const { currentEnvelopeItem, setCurrentEnvelopeItem } = useCurrentEnvelopeRender();
+  const { isDirectTemplate, envelope, recipientFieldsRemaining, recipient, nextRecipient, email, fullName } =
+    useRequiredEnvelopeSigningContext();
 
   const { onDocumentCompleted, onDocumentError } = useEmbedSigningContext() || {};
 
@@ -157,41 +146,7 @@ export const EnvelopeSignerCompleteDialog = () => {
     resetCscFlow();
   };
 
-  const handleOnNextFieldClick = () => {
-    const nextField = recipientFieldsRemaining[0];
-
-    if (!nextField) {
-      setShowPendingFieldTooltip(false);
-      return;
-    }
-
-    const isEnvelopeItemSwitch = nextField.envelopeItemId !== currentEnvelopeItem?.id;
-
-    if (isEnvelopeItemSwitch) {
-      setCurrentEnvelopeItem(nextField.envelopeItemId);
-    }
-
-    setShowPendingFieldTooltip(true);
-
-    setTimeout(
-      () => {
-        const fieldTooltip = document.querySelector(`#field-tooltip`);
-
-        if (fieldTooltip) {
-          fieldTooltip.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          // Tooltip not in DOM (page virtualized away) — signal the PDF viewer
-          // to scroll to the correct page via the data attribute.
-          const pdfContent = document.querySelector(PDF_VIEWER_CONTENT_SELECTOR);
-
-          if (pdfContent) {
-            pdfContent.setAttribute('data-scroll-to-page', String(nextField.page));
-          }
-        }
-      },
-      isEnvelopeItemSwitch ? 150 : 50,
-    );
-  };
+  const handleOnNextFieldClick = useGoToNextSigningField();
 
   const handleOnCompleteClick = async (
     nextSigner?: { name: string; email: string },

@@ -2,7 +2,6 @@ import { extractCookieFromHeaders } from '@documenso/auth/server/lib/utils/cooki
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { PREFERRED_TEAM_URL_COOKIE } from '@documenso/lib/constants/cookies';
 import { getTeams } from '@documenso/lib/server-only/team/get-teams';
-import { formatDocumentsPath } from '@documenso/lib/utils/teams';
 import { ZTeamUrlSchema } from '@documenso/trpc/server/team-router/schema';
 import { redirect } from 'react-router';
 
@@ -46,7 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       throw redirect('/inbox');
     }
 
-    throw redirect(formatDocumentsPath(currentTeam.url));
+    throw redirect(`/t/${currentTeam.url}`);
   }
 
   throw redirect('/signin');
