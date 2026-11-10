@@ -97,15 +97,19 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
   const errorParam = searchParams.get('error');
   const signupError = errorParam ? SIGNUP_ERROR_MESSAGES[errorParam] : undefined;
 
+  // After a failed sign-in the provider sends the user back here with ?error=. Redirecting again
+  // would loop, so the page shows the error instead.
+  const isAutoRedirectingToOIDC = shouldAutoRedirectToOIDC && !errorParam;
+
   useEffect(() => {
-    if (!shouldAutoRedirectToOIDC) {
+    if (!isAutoRedirectingToOIDC) {
       return;
     }
 
     void authClient.oidc.signIn({ redirectPath: returnTo ?? '/' });
-  }, [shouldAutoRedirectToOIDC, returnTo]);
+  }, [isAutoRedirectingToOIDC, returnTo]);
 
-  if (shouldAutoRedirectToOIDC) {
+  if (isAutoRedirectingToOIDC) {
     return (
       <AuthShell>
         <div className="flex flex-col items-center justify-center gap-y-4 py-12">

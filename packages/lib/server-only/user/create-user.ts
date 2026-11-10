@@ -4,6 +4,7 @@ import type { User } from '@prisma/client';
 
 import { SALT_ROUNDS } from '../../constants/auth';
 import { AppError, AppErrorCode } from '../../errors/app-error';
+import { ensureCorteronPersonalTeamSetup } from '../corteron/corteron-mail';
 import { createPersonalOrganisation } from '../organisation/create-organisation';
 
 export interface CreateUserOptions {
@@ -63,6 +64,12 @@ export type OnCreateUserHookOptions = {
 export const onCreateUserHook = async (user: User, options: OnCreateUserHookOptions = {}) => {
   if (!options.skipPersonalOrganisation) {
     await createPersonalOrganisation({ userId: user.id });
+
+    // Corteron Mail: status webhook to the mail UI and Reply-To on the personal team. A failure
+    // must not block sign-up; the hourly corteron-mail-sync job repairs missing webhooks.
+    await ensureCorteronPersonalTeamSetup(user.id).catch((err) => {
+      console.error('Failed to set up the Corteron Mail personal team', err);
+    });
   }
 
   return user;
