@@ -16,6 +16,10 @@ declare namespace NodeJS {
     NEXT_PRIVATE_OIDC_PROVIDER_LABEL?: string;
     NEXT_PRIVATE_OIDC_SKIP_VERIFY?: string;
 
+    // Corteron Mail integration (status webhooks and deprovisioning)
+    NEXT_PRIVATE_CORTERON_MAIL_URL?: string;
+    NEXT_PRIVATE_CORTERON_SHARED_SECRET?: string;
+
     // Derived in `createPublicEnv()`; do not set manually.
     NEXT_PUBLIC_GOOGLE_SSO_ENABLED?: 'true' | 'false';
     NEXT_PUBLIC_MICROSOFT_SSO_ENABLED?: 'true' | 'false';
