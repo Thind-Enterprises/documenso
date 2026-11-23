@@ -61,11 +61,43 @@ export const DocumentInviteEmailTemplate = ({
     previewText = msg`Please ${action} your document ${documentName}`;
   }
 
+  const hasSenderDetails = organisationType === OrganisationType.PERSONAL;
+  const hasMessage = Boolean(customBody?.trim());
+
+  const senderMessage =
+    hasSenderDetails || hasMessage ? (
+      <Section
+        className="mt-6 rounded-lg bg-muted px-5 pt-0 pb-4"
+        style={{ borderLeft: `4px solid ${QUOTE_ACCENT_COLOR}` }}
+      >
+        {hasMessage ? (
+          <TemplateCustomMessageBody text={customBody} />
+        ) : (
+          <Text className="text-base text-muted-foreground">
+            <Trans>
+              {inviterName} has invited you to {action} the document "{documentName}".
+            </Trans>
+          </Text>
+        )}
+
+        {hasSenderDetails && (
+          <Text className="mt-0 mb-0 font-semibold text-foreground text-sm">
+            <Trans>
+              — {inviterName}{' '}
+              <Link className="font-normal text-muted-foreground" href={`mailto:${inviterEmail}`}>
+                ({inviterEmail})
+              </Link>
+            </Trans>
+          </Text>
+        )}
+      </Section>
+    ) : null;
+
   return (
     <Html>
       <Head />
 
-      <Body className="mx-auto my-auto bg-background font-sans">
+      <Body className="mx-auto my-auto bg-[#f4f4f7] px-2 py-8 font-sans">
         <Preview>{_(previewText)}</Preview>
 
         <Section>
@@ -73,9 +105,11 @@ export const DocumentInviteEmailTemplate = ({
             <TemplateNewAccountWarning senderEmail={newAccountWarningSenderEmail} reportUrl={reportUrl} />
           )}
 
-          <Container className="mx-auto mt-8 mb-2 max-w-xl rounded-lg border border-border border-solid p-4 backdrop-blur-sm">
+          <Container className="mx-auto max-w-xl rounded-xl border border-border border-solid bg-background px-8 pt-8 pb-6">
             <Section>
-              <TemplateBrandingLogo assetBaseUrl={assetBaseUrl} className="mb-4 h-6" />
+              <TemplateBrandingLogo assetBaseUrl={assetBaseUrl} className="mb-4 h-8" />
+
+              <Hr className="my-0 border-border" />
 
               <TemplateDocumentInvite
                 inviterName={inviterName}
@@ -88,38 +122,20 @@ export const DocumentInviteEmailTemplate = ({
                 organisationType={organisationType}
                 teamName={teamName}
                 includeSenderDetails={includeSenderDetails}
+                message={senderMessage}
               />
-            </Section>
-          </Container>
 
-          <Container className="mx-auto mt-12 max-w-xl">
-            <Section>
-              {organisationType === OrganisationType.PERSONAL && (
-                <Text className="my-4 font-semibold text-base">
-                  <Trans>
-                    {inviterName}{' '}
-                    <Link className="font-normal text-muted-foreground" href={`mailto:${inviterEmail}`}>
-                      ({inviterEmail})
-                    </Link>
-                  </Trans>
-                </Text>
-              )}
-
-              <Text className="mt-2 text-base text-muted-foreground">
-                {customBody ? (
-                  <TemplateCustomMessageBody text={customBody} />
-                ) : (
-                  <Trans>
-                    {inviterName} has invited you to {action} the document "{documentName}".
-                  </Trans>
-                )}
+              <Text className="mt-8 mb-0 text-muted-foreground text-xs leading-5">
+                <Trans>Button not working? Copy and paste this link into your browser:</Trans>
+                <br />
+                <Link className="break-all text-primary" href={signDocumentLink}>
+                  {signDocumentLink}
+                </Link>
               </Text>
             </Section>
           </Container>
 
-          <Hr className="mx-auto mt-12 max-w-xl" />
-
-          <Container className="mx-auto max-w-xl">
+          <Container className="mx-auto max-w-xl px-8">
             <TemplateFooter reportUrl={reportUrl} />
           </Container>
         </Section>
@@ -127,5 +143,7 @@ export const DocumentInviteEmailTemplate = ({
     </Html>
   );
 };
+
+const QUOTE_ACCENT_COLOR = '#4f46e5';
 
 export default DocumentInviteEmailTemplate;
